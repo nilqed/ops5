@@ -19,92 +19,79 @@ The star indicates that the preceding item is to be repeated zero or more times.
                            { form element-variable }
       negalive-ce          - form
       
-      form
-      Ihs-term
-      Ihs-value
-      restriction
-      atomic-value
-      var-or-constant
-      predicate
-      rhs
-      action
-     
+      form                 ( Ihs-term* )
+                          
       
-     
+      Ihs-term              t constant-symbolic-atom Ihs-value
+                            t number Ihs-value
+                            Ihs-value
+      Ihs-value             { restriction* }
+                            restriction
+      restriction           << any-atom* >>
+                            predicate atomic-value
+                            atomic- value
+      atomic-value          /1 any-atom
+                            var-or-constant
+      var-or-constant       constant-symbolic-atom
+                            number
+                            variable  
+      predicate             <>
+                            <
+                            < =
+                            > =
+                            >
+                            < = >
+      rhs                   action*
+      action                ( make rhs-term* )
+                            ( remove elemenhdesignator* )
+                            ( modify element-designator rhs-term* ) 
+                            ( halt )
+                            (  bind variable )
+                            (  bind variable rhs-term* )
+                            (  cbind element-variable )
+                            (  call constant-symbolic-atom rhs-term* )
+                            (  write rhs-lenn* )
+                            (  openfile rhs-lerm* )
+                            (  closefile rhs-term* )
+                            (  default rhs-lerm* )
+                            (  build quoled-form* )
+
+
+      element-designator   number
+                           element-variable
+                           
+      rhs-term             t var or-constant rhs-value
+                           rhs- value
+      rhs-value            atomic-value
+                           function
+      function             ( litval var-or-constant )
+                           ( substr element-designator varorconstant varor-constant )
+                           ( genatom )
+                           ( crlf )
+                           ( rjust varorconstant )
+                           ( tab to var-or-constant )
+                           ( accept )
+                           ( accept var or constant )
+                           { accept! ine var-orconstant* )
+                           ( compute expression )
+                           user-defined-function
       
-     
-    
+      userdefined-funclion  ( constant-symbolic-atom var-orconstant* )
       
-      ( Ihs-term* )
-      t constant-symbolic-atom Ihs-value
-      t number Ihs-value
-      Ihs-value
-      { restriction* }
-      restriction
-      << any-atom* >>
-      predicate atomic-value
-      atomic- value
-      /1 any-atom
-      var-or-constant
-      constant-symbolic-atom
-      number
-      variable
-      <>
-      <
-      < =
-      > =
-      >
-      < = >
-      action*
-      ( make rhs-term* )
-      ( remove elemenhdesignator* )
-      ( modify element-designator rhs-term* )
+      expression            number
+                            variable
+                            expression operator expression
+                            ( expression )
+      operator              +
+                            -
+                            *
+                            //
+                            \\
+      quoled-form           \\ rhs-value
+                            any-atom
+                            ( quoted-form* )
       
-      element-designator
-      rhs-term
-      rhs-value
-      function
-      userdefined-funclion
-      expression
-      operator
-      quoled-form
-      halt )
-      bind variable )
-      bind variable rhs-term* )
-      c b i n d element-variable )
-      call constant-symbolic-atom rhs-term* )
-      write rhs-lenn* )
-      openfile rhs-lerm* )
-      closefile rhs-term* )
-      default rhs-lerm* )
-      build quoled-form* )
-      number
-      element-variable
-      t var or-constant rhs-value
-      rhs- value
-      atomic-value
-      function
-      ( litval var-or-constant )
-      ( substr element-designator varorconstant varor-constant )
-      ( genatom )
-      ( crlf )
-      ( rjust varorconstant )
-      ( tab to var-or-constant )
-      ( accept )
-      ( accept var or constant )
-      { accept! ine var-orconstant* )
-      ( compute expression )
-      user-defined-function
-      ( constant-symbolic-atom var-orconstant* )
-      number
-      variable
-      expression operator expression
-      ( expression )
-      //
-      \\
-      \\ rhs-value
-      any-atom
-      ( quoted-form* )
+          
 
 Several terms have been left undefined: variable, element-variable, constant-symbolic-atom, any-atom, and
 number. Symbolic atoms and numbers are described in Section 2. The two kinds of variables are described in
