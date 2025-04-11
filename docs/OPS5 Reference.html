@@ -1,0 +1,777 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252"><title>OPS5 Reference</title>
+</head>
+<body bgcolor="#dadada">
+<hr>
+<center><b>OPS5 Reference</b></center>
+<hr>
+<pre>Note: much of the description below is compiled from the following sources:
+
+    <i>Programming Expert Systems in OPS5</i>, by Lee Brownston, et al., Addison-Wesley, 1985.
+    <i>VAX OPS5 Reference Manual</i>, Digital Equipment Corp., 1985.
+    
+An OPS5 program consists of a declaration section where basic data constructs
+are defined followed by a production section where rules for manipulation of
+the data.  OPS5 data elements reside in a global database referred to as
+working memory; rules are stored in production memory. 
+
+OPS5 programs execute by matching working memory elements with rules in
+production memory and firing (executing) the most dominant rule which is
+matched.  The Match-Select-Execute cycle continues until the program halts 
+explicitly or until no rules can be matched to the working memory.
+
+This cycle will be explained in greater detail as we flesh out the details of
+both working memory elements and productions.
+
+Below are several sample OPS5 programs:
+
+    <a href="https://www.cs.gordon.edu/local/courses/cs323/OPS5/demo.txt">DEMO.OPS</a>
+    <a href="https://www.cs.gordon.edu/local/courses/cs323/OPS5/major.txt">MAJORS.OPS</a>
+    <a href="https://www.cs.gordon.edu/local/courses/cs323/OPS5/conflict.txt">CONFLICT.OPS</a>
+<br><br>
+<hr>
+<br>
+<b>DATA TYPES</b>
+  
+Atoms
+
+    Numeric
+
+        <i>Integers</i>
+        
+            EBNF:  
+        
+                <i>decimalDigit</i> ::= 0|1|2|3|4|5|6|7|8|9
+                <i>integer</i>      ::= [+|-] <i>decimalDigit</i> {<i>decimalDigit</i>} [.]
+            
+            For example,
+            
+                +42
+                12
+                6. 
+                -56.
+
+        <i>Floating-point</i>
+        
+            EBNF:
+            
+                <i>exp</i>   ::= e <i>integer</i>
+                <i>float</i> ::= [+|-] {<i>decimalDigit</i>} [.] <i>decimalDigit</i> {<i>decimalDigit</i>} [<i>exp</i>]                          
+                
+            For example,
+                
+                0.0
+                2.717
+                -.3e+22
+                42e+2
+          
+    Symbolic
+    
+        Any atom (sequence of characters) which has no numeric meaning is a
+        symbolic atom.
+        
+        Predefined
+          
+            NIL    
+          
+        User-defined, for example,
+          
+            LEE
+            Lee
+            grant
+            927-2300
+            255 Grapevine Road
+            South_Boston
+            South Boston
+            (apple)
+            (apple {orange) kumquat)
+            a^;(
+            ?-c
+     
+    Note: To include spacing, parentheses, braces, circumflex or semicolons the
+    atoms must be delimited by vertical bars, that is,
+     
+            |255 Grapevine Road|
+            |South Boston|
+            |(apple)|
+            |(apple {orange) kumquat)|
+            |a^;(|
+              
+    Atoms delimited by vertical bars are called "quoted atoms." The VAX OPS5 runtime 
+    system does not distinguish between case in characters used in atoms, unless they 
+    are quoted.  Thus,  Lee and LEE are synonyms, but |Lee| and |LEE| are unique.
+<br><br>
+<hr>
+<br>
+<b>WORKING MEMORY</b>
+
+Working memory elements are declared in the first section of an OPS5 program.
+An element class is decalred with the <code>literalize</code> command, whose EBNF is,
+
+    (literalize className {attributeName})
+
+For example, we might declare a class called student as follows,
+
+    (literalize Student
+        id
+        gpa
+        current-class
+        major
+        major-2
+        major-3
+        minor-1
+        minor-2
+    )
+
+which indicates that the production system will contain data about Student
+entities, for whom seven different attributes have been declared.  Note that
+Student is the className, and gpa through minor-2 are attributes of the class. 
+Note, also, that the language does not require (or allow) us to declare the types of
+the attributes, only their names.  Thus, gpa could contain the values 3, 2.45, pi
+or even Howdy-Doody.
+
+As indicated in the EBNF, a class need not have attributes, for example, it is
+common to define context classes such as,
+
+    (literalize Print-Results)
+    
+to control flow of the OPS5 program, as described later.  It is important to
+distinguish the difference between the declaration of an element class from the
+actual instantiation of working memory elements (WMEs).  Declaring a class does
+not reserve memory locations.  In order to actually create a WME, one uses the
+make command, for example,
+
+    (make Student ^id 99666666 ^gpa 2.10 ^major CS ^minor MA ^minor-2 CH)
+    (make Student ^id 99777777 ^gpa 3.0 ^major CS ^minor BI ^minor-2 YM)
+    (make Student ^id 99888888)
+    (make Student ^major-2 EN)
+    (make Student)
+
+instantiates five WMEs with the attribute values inidicated.  Any attribute
+that is not explicitly instantiated with a value will be initialized with the value 
+NIL.
+
+Working memory elements have two additional fields associated with them.  To
+examine working memory, the OPS5 command wm is used,
+
+    OPS&gt;wm
+    
+    1 [NIL] (STUDENT ^ID 99666666 ^GPA 2.10 ^MAJOR CS ^MINOR MA ^MINOR-2 CH)
+    2 [NIL] (STUDENT ^ID 99777777 ^GPA 3.0 ^MAJOR CS ^MINOR BI ^MINOR-2 YM)
+    3 [NIL] (STUDENT ^ID 99888888)
+    4 [NIL] (STUDENT ^MAJOR-2 EN)
+    5 [NIL] (STUDENT)
+    
+In this view of the working memory, the first number is referred to as the time
+tag for the memory element.  The larger the number, the more recent the memory
+element.  A memory element's time tag is set when it is first instantiated and
+is updated anytime the element is modified.  The bracketed symbolic-atom is the
+name of the production which instantiated/modified the element.  In this case,
+the elements were instantiated without the use of a production, thus the
+predefined symbol NIL is used in place of the normal production name.
+<br><br>
+<hr>
+<br> 
+<b>STRUCTURED DATA</b>
+
+Each class element can have at most one multi-valued attribute called a
+vector attribute.  Vector attributes are declared as follows,
+
+    (vector-attribute vectorName {vectorName})
+    
+for example,
+
+    (vector-attribute airlines-flown)
+    
+which declares airlines-flown to be a vector when used as an attribute name
+in a literalize command.  Note that the order on the vector-attribute and
+literalize commands is irrelevant in the language, yet it is recommended that
+vector attributes are declared before use in a literalize, to improve
+readability.  Several vector attributes can be declared at once, as in,
+
+    (vector-attribute
+         airlines-flown              ;  for example, DL US AA BA
+         hotels-stayed               ;  for example, HILTON, MARRIOTT, MOTEL6
+         rental-car-companies-used   ;  for example, HERTZ, AVIS, BUDGET
+    )
+
+    (literalize Employee
+           name                        ;  for example, |LEVY I|
+           idNumber                    ;  for example, 12345
+           total-frequent-flier-miles  ;  for example, 230145
+           airlines-flown              ;  the vector attribute
+    )
+    
+etc.  The example above indicates that white space may be used at the
+programmer's discretion.  Also, note the use of semicolons to mark comments to
+the end of the current line.
+<br><br>
+<hr>
+<br>
+<b>PRODUCTIONS</b>
+
+The OPS5 program is a collection of rules known as productions. Productions have the 
+form,
+
+     LHS Conditions --&gt; RHS Actions
+     
+where the condition elements are collectively referred to as the left-hand side
+of the production and the actions are referred to as the right-hand side of the
+production.
+
+The OPS5 syntax for productions is,
+
+    (p <i>production-name
+       LHS</i>
+    --&gt;
+       <i>RHS</i>
+    )
+
+Productions may have any symbolic name except NIL.
+<br><br>
+<hr>
+<br>
+<b>LHS CONDITIONS</b>
+
+The condition elements in an OPS5 production are used by the Match-Select-
+Execute cycle to chose which actions to perform.  In this way, the
+condition elements serve as the only explicit form of control structure
+in the language.
+
+Condition elements are parenthesized and always begin with the name of a
+working memory element data class.  For example, the condition element,
+
+    (student)
+    
+would simply be an assertion that one or more student class elements were
+currently found in working memory.  Every LHS must have from 1 to 32
+condition elements of this form (referred to as positive condition
+elements). It is possible to be more specific in the specification of
+these elements, though.  For instance,
+
+    (student ^id 99777777)
+    
+would only be satisfied if there was one (or more) WME with class student
+and id attribute equal to 99777777.  Equality is not the only possible
+test when matching condition elements to the working memory.  Predicates
+supported by OPS5 are,
+
+    Any types of data
+    
+    =       Same type as and equal to  (default)
+    &lt;&gt;      Not same type as or not equal to
+    &lt;=&gt;     Same type as
+
+    Integer or Floating-point only
+    
+    &lt;       Same type as and less than
+    &lt;=      Same type as and less than or equal to
+    &gt;       Same type as and greater than
+    &gt;=      Same type as and greater than or equal to
+
+Thus, we could use the following,
+
+    (student ^gpa &gt; 3.0)
+    
+to select from among the WME's for student class satisfying the condition
+of gpa attribute greater than 3.0.  More complex criteria are possible by
+the inclusion of conjunctions (AND conditions) or disjunctions (OR
+conditions) whose syntax follows.
+    
+<i>Conjunctions</i>
+
+Conjunctions are written as a curly-brace delimited set of conditions. 
+For instance,
+
+    { &gt; 3.0 &lt; 3.5 }
+    
+would be a test to ascertain that a value was greater than 3.0 AND less
+than 3.5.  The conjunction can be used in a condtion element such as,
+
+    (student ^gpa { &gt; 3.0 &lt; 3.5 })
+    
+<i>Disjunctions</i>
+
+Disjunctions are wwritten as a double-angle-bracket delimited set of
+conditions.  For example,
+
+    &lt;&lt; moe curly larry &gt;&gt;
+
+would be used to test for equality (the default predicate) to the symbol
+moe OR curly OR larry.  Recall that case is not significant unless the
+symbol is quoted.
+   
+<i>Negative Condition Elements</i>
+
+A negative condition element is a condition element which is preceded
+with a negative sign.  An LHS may have any number of negative condition
+elements.  A negative element asserts that a given WME does not exist. 
+For example,
+
+    - (student)
+    
+would assert that no student class WME's are instantiated.  Further,
+
+    - (student ^gpa { &gt; 3.0 &lt; 3.5 })
+    
+would assert that working memory does not contain any WME's for student
+classes with gpa attribute greater than 3.0 and less than 3.5.  Next
+consider the following two conditions elements,
+
+    (student ^gpa &lt;&gt; 4.0)
+
+versus,
+    
+    - (student ^gpa 4.0)
+    
+At first glance, these seem to have the same meaning, but that is not
+correct.  In the first case, the condition element will only be satisfied
+if a) there exists at least one student class WME which b) has gpa 
+attribute not equal to 4.0.
+
+The second condition means, there is not a student class WME which has a
+gpa equal to 4.0.  Note that the subtle difference is that this is true
+even if there are NO student class WME's.
+    
+<i>Variables</i>
+
+Variables in OPS5 are denoted by atoms enclosed in angle brackets such as,
+
+    &lt;gpa&gt;
+    
+The scope of all variables is the production in which it is used.  There is no 
+global communication between variables.  The first use of a variable in a 
+production bind a value to the symbolic name.  Each subsequent use of the 
+variable references the bound value (there is an exception since OPS5 has
+an action which allows a bound value to be changed).
+
+Variables are particularly useful when writing a sequence of condition
+elements, such as,
+
+    (student ^id &lt;id-1&gt; ^major &lt;major&gt;)
+    (student ^id { &lt;id-2&gt; &lt;&gt; &lt;id-1&gt; } ^major &lt;major&gt;)
+    
+This sequence of conditions can be read as follows,
+
+    a. A student class WME exists with a given is and major attribute value,   
+    b. A second student class WME exists with a different id value and the
+       same major value, and
+    c. &lt;id-1&gt;, &lt;id-2&gt; and &lt;major&gt; are bound to the values
+       of the given WME attribute values for the remainder of the production. 
+
+Variables are also useful for communicating a value bound from working memory
+to the RHS of a production for a subsequent action.
+<br><br>
+<hr>
+<br>
+<b>RHS ACTIONS</b>
+
+The right hand side of a production contains the actual actions to be
+performed by the OPS5 program.  These action include creating, modifying
+and deleting WME's, halting the program explciitly, compute arithmetic
+values, and performing I/O operations.  Other advanced features are also
+available but are outside the scope of this handout.
+    
+<i>Working memory actions</i>
+
+Three actions are available to modify the working memory.  They are make,
+remove and modify.
+    
+<b>make</b>
+To create a WME during runtime, the make action is used.  The syntax for
+a make action is,
+
+     (make <i>className</i> {<i>attributeName</i> <i>value</i>})
+     
+For example,
+
+     (make student)
+     (make student ^gpa 4.0)
+     (make student ^id &lt;id-2&gt; ^major CS)
+     
+would create three new WME's of class student.  The first would have no
+explicit values bound to its attributes (thus they would all implicitly
+be bound to NIL).  The next WME would have all attributes NIL except for
+gpa which would be set to 4.0.  The third WME would have the id attribute
+set to the value which had previously been bound to &lt;id-2&gt; in the same
+production.  Further, the major attribute of this WME would be set to CS.
+    
+<b>remove</b>
+To delete a WME, the remove action is used.  The syntax for a remove is,
+
+    (remove <i>conditionNumber</i>)
+    
+This form used used to associate a WME with a condition which it matches.
+For example, consider the complete production,
+
+    (p example-1
+        (student ^gpa &gt; 4.0)   ;  error data
+    --&gt;
+        (remove 1)
+    )
+    
+ which means, if a WME of class student exists with a gpa attribute
+ greater than 4.0, then remove that WME from the working memory.  Note
+ that the number 1 in the remove action indicates that the first (and
+ only) condition is the one that designates the WME to be removed.  A
+ more complex example is,
+
+    (p example-2
+        (student ^gpa { &gt; 3.5 &lt;= 4.0 })
+        (student ^gpa &gt; 4.0)   ;  error data
+    --&gt;
+        (remove 2)
+    )
+
+Note that the number is remove now indicates that the SECOND condition
+element is the element which matches the WME to be deleted.
+    
+<b>modify</b>
+To change the values in a WME without removing the WME and making a new
+one, the modify action is used.  The syntax for modify is,
+
+    (modify <i>conditionNumber</i> {<i>attributeName</i> <i>value</i>})
+    
+For example,
+
+    (p example-3
+        (student ^gpa { &gt; 3.5 &lt;= 4.0 })
+        (student ^gpa &gt; 4.0)   ;  error data
+    --&gt;
+        (modify 1)
+        (modify 2 ^gpa 4.0)
+    )
+    
+would update the time tag of the WME matching the first condition element
+and would both update the time tag and the gpa attibute value of the WME
+matching the second condition element.  Values may be literal, computed
+or bound to a variable.  For example,
+
+    (p example-4
+        (student ^gpa { &lt;gpa&gt; &gt; 3.5 &lt;= 4.0 })
+        (student ^gpa &gt; 4.0)   ;  error data
+    --&gt;
+        (modify 2 ^gpa <gpa>)
+    )
+    
+would update the value of the WME matching the second condition element
+by changing its gpa attibute to the value which was bound to &lt;from the
+WME matching the first condition.  As always, the time tag of the WME is
+updated when the element is modified.  Note that in this case, though,
+the WME matching the first condition is not affected at all, thus its
+time tag is unchanged.
+    
+<i>Computational actions</i>
+    
+<b>compute</b>
+Compute is not actually an action, per se, but is a function which returns 
+a value.  Usually this (and other) functions are used on the RHS of an
+OPS5 production; however, they may also be used on the LHS for some purposes.
+
+Compute allows arithmetic computations using the following operators,
+
+    +      Addition
+    -      Subtraction
+    *      Multiplication
+    //     Division
+    \\     Modulus (integer data only)
+      
+OPS5 uses infix notation and performs all operations at the same level of
+precedence, evaluated right to left.  Thus,
+
+      (compute 2 + 3 * 4 + 5)
+      
+evaluates to 29, not 19.  To override these rules, parenthesized expressions
+may be used, for example
+
+      (compute 2 + (3 * 4) + 5)
+      
+which evaluates to 19.
+    
+<b>Important notes!</b>
+1. As shown above, all values must be separated from operators by whitespace.
+2. OPS5 determines the type of an arithmetic expression from the values bound.
+For example,
+
+    22 // 5
+
+returns 4 (the integer result of 2 divided by 5.  But consider the following
+floating-point expressions and their results:
+
+    2 // .5     returns 4.0
+    .2 // 5     returns 0.4000000E-01
+    .2 // .5    returns 0.4
+   
+Mixed-mode expressions evaluate as floating-point, such as,
+
+    22.0 // 5   returns 4.4
+    
+<i>I/O actions</i>
+
+    <i>File actions</i>
+    
+        mode ::= IN | OUT | APPEND
+        (OPENFILE <i>logical-file VAXfilename mode</i>)    
+    
+        (CLOSEFILE <i>logical-file</i>) action
+        
+    <i>Input functions</i>
+    
+        (ACCEPT [<i>logical-file</i>]) function
+                         
+        (ACCEPTLINE [<i>logical-file</i>] [<i>default-value</i>]) function
+            
+    <i>Output actions/functions</i>
+    
+        (WRITE) action
+        
+            (CRLF) function 
+            (TABTO <i>n</i>) function
+            (RJUST <i>n</i>) function
+            
+        For example,
+        
+            (WRITE |The value stored is: | <x> (CRLF))
+        
+<br><br>
+<hr>
+<br>
+
+<b>PROGRAM FLOW IN OPS5</b>
+
+OPS5 programs are not written like programs in other paradigms.  For example,
+there is no traditional control structure in the language.  The notion of
+sequential, conditional and repetitive control is replaced by a Match-Select-
+Execute algorithm which can be described as,
+
+    repeat
+          perform a match between working memory and production memory
+          exit if any of the following are true
+               the conflict set is empty
+               a halt was performed
+               the cycle count has been reached
+               a breakpoint has been reached
+          perform conflict resolution via given strategy
+          fire the selected rule
+    end
+
+Thus, it is not obvious what order the productions which comprise the
+program will be executed without also knowing what data will be provided.  
+
+One cycle of the MSE algorithm can be described in detail by considering an
+actual example.  When a rule is satisfied by one or more matches in WM, then
+those matches become elements of the <i>conflict set</i>.  When selecting an
+element of the conflict set, the following criteria are used to choose among
+the elements,
+
+    REFRACTION
+    
+        This term comes from the neurobiological observation of a <i>refractory
+        period</i> for a neuron, which means that the neuron is not able to fire
+        immediately without first going through a relaxation process.  In a 
+        similar way, OPS5 will not allow the same instantiation in the conflict 
+        set from firing twice in a row.  This prevents the inference engine from
+        entering into an infinite loop.
+        
+    RECENCY
+    
+        When selecting between two instantiations, select the one whose time
+        tag is most recent, at the first point of difference.
+        
+    SPECIFICITY
+    
+        If the recency of two or more instantiations is equal, select the most
+        specific instantiation.  Specificity is determined by the number of 
+        conditions which must be met by the LHS of the production.  Each of the 
+        following is considered to be a test by the LHS:
+        
+            Class name
+            Disjunction
+            Value preceeded by a predicate (except in a disjunction)
+            All occurrences of a variable, except the first
+
+To understand this conflict resolution strategy, consider the following state of
+working memory,
+
+    #1 1 [NIL] (VALUE ^DATA 1)
+    #2 2 [NIL] (VALUE ^DATA 42)
+    #3 3 [NIL] (VALUE ^DATA -4)
+    #4 4 [NIL] (VALUE ^DATA 1 ^TYPE NUMBER ^POSITIVE TRUE)
+    #5 5 [NIL] (VALUE ^DATA 77 ^POSITIVE TRUE)
+    #6 6 [NIL] (BEGIN)
+
+and the following productions,
+
+
+    (p rule-1
+       (begin)
+       (value ^data &lt; 0 ^positive NIL)         
+    --&gt;
+       (modify 2 ^positive FALSE)
+    )
+
+    (p rule-2
+       (begin)
+       (value ^data &gt; 0 ^positive NIL)           
+    --&gt;
+       (modify 2 ^positive TRUE)
+    )
+
+    (p rule-3
+       (begin)
+       (value ^data { <x> &gt; 0 })                
+     - (value ^data &gt; <x>)                      
+     - (value ^positive NIL)                    
+    --&gt;
+       (write |Largest value: | (tabto 20) <x> (crlf))
+       (remove 1)
+       (remove 2)
+       (make normal-values)
+    )
+
+    (p rule-4
+       (normal-values)                           
+       (value ^data <x>)    
+     - (value ^data &gt; <x>)                      
+    --&gt;
+       (write (tabto 20) <x> (crlf))
+       (remove 2)
+    )
+
+    (p rule-4-specific
+       (normal-values)                           
+       (value ^data <x> ^positive TRUE)    
+     - (value ^data &gt; <x>)                      
+    --&gt;
+       (write (tabto 20) <x> (crlf))
+       (remove 2)
+    )
+
+The program, a file with extention .OPS, is entered via the VAX text editor.
+To compile the source code give the VAX command,
+
+    $ OPS/EXE filename
+    
+then,
+
+    $ RUN filename
+    
+to enter the OPS environment.  Note: If the startup statement in the OPS5
+program contains a (RUN) command, then the OPS5 environment will not be 
+visible during runtime.
+
+We can examine the intial conflict set by using the OPS5 command,
+
+    OPS5&gt;cs
+    
+    RULE-1 #6 6  #3 3
+    RULE-2 #6 6  #2 2
+    RULE-2 #6 6  #1 1
+
+Note that this means that three instantiations are vying for selection at
+this time.  RULE-1 matches its first condition to WME #6 (time tag 6) and
+WME #3 (time tag 3).  RULE-1 also matches WME #6 and WME #2 (time tag 2).
+The conflict resolution strategy says that Recency is the first consideration.
+Hence, 6|3 is more recent than 6|2 or 6|1.  Thus, RULE-1 fires using the data
+from WME's with time tags 6 and 3, leaving WM:
+
+    OPS5&gt;run 1
+    OPS5&gt;wm
+
+    #1 1 [NIL] (VALUE ^DATA 1)
+    #2 2 [NIL] (VALUE ^DATA 42)
+    #4 4 [NIL] (VALUE ^DATA 1 ^TYPE NUMBER ^POSITIVE TRUE)
+    #5 5 [NIL] (VALUE ^DATA 77 ^POSITIVE TRUE)
+    #6 6 [NIL] (BEGIN)
+    #3 7 [RULE-1] (VALUE ^DATA -4 ^POSITIVE FALSE)
+
+and the second conflict set is,
+
+    OPS5&gt;cs
+    
+    RULE-2 #6 6  #2 2
+    RULE-2 #6 6  #1 1
+
+again, Recency is the deciding factor.  RULE-2 will fire with time tags 6 and 2
+as the WME's.  On the third cycle, RULE-2 will fire with time tags 6 and 1, leaving,
+
+    OPS5&gt;run 2
+    OPS5&gt;wm
+    #4 4 [NIL] (VALUE ^DATA 1 ^TYPE NUMBER ^POSITIVE TRUE)
+    #5 5 [NIL] (VALUE ^DATA 77 ^POSITIVE TRUE)
+    #6 6 [NIL] (BEGIN)
+    #3 7 [RULE-1] (VALUE ^DATA -4 ^POSITIVE FALSE)
+    #2 8 [RULE-2] (VALUE ^DATA 42 ^POSITIVE TRUE)
+    #1 9 [RULE-2] (VALUE ^DATA 1 ^POSITIVE TRUE)
+    
+    OPS5&gt;cs
+    RULE-3 #6 6  #5 5
+
+RULE-3 contains the write action, so output is generated in this cycle and the 
+conflict set becomes,
+
+    RULE-4 #7 10  #2 8
+    RULE-4-SPECIFIC #7 10  #2 8
+
+Note that in this case, Recency is not useful since both rules refer to the same
+time tags.  In that case, we next look to Specificity as the dominant ruler.  In
+RULE-4 the LHS contains 4 tests, while RULE-4-SPECIFIC contains 5 tests, thus the
+more specific rule fires.
+
+   (p rule-4
+       (normal-values)                    ; 1 test                     
+       (value ^data &lt;x&gt;)                  ; 1 test
+     - (value ^data &gt; &lt;x&gt;)                ; 2 tests
+    --&gt;
+       (write (tabto 20) &lt;x&gt; (crlf))
+       (remove 2)
+    )
+
+    (p rule-4-specific  
+       (normal-values)                    ; 1 test
+       (value ^data &lt;x&gt; ^positive TRUE)   ; 2 tests
+     - (value ^data &gt; &lt;x&gt;)                ; 2 tests
+    --&gt;
+       (write (tabto 20) &lt;x&gt; (crlf))
+       (remove 2)
+    )
+
+<br><br>
+<hr>
+<br>
+
+<b>OPS5 TOP LEVEL COMMANDS</b>
+
+Compiling on OPS5 source file on the VAX:
+
+    $ OPS/EXE filename
+
+Running a compiled OPS5 executable file:
+
+    $ RUN filename
+
+OPS5 Environment Commands
+
+Note:  All of the following commands can be issued at the OPS5&gt; prompt or within
+the STARTUP statement of the program.  Other commands are also available;
+consult the OPS5 Reference Manual for further details.
+
+    run [<i>n</i>]             go forward <i>n</i> cycles, or until halted if no <i>n</i> is given
+    watch 0|1|2|3|4     watch 0 - no trace information
+                        watch 1 - display productions executed / time tags
+                        watch 2 - above plus show modifications to WM
+                        watch 3 - above plus show modifications to CS
+                        watch 4 - above plus show modifications to PM 
+    back [<i>n</i>]            backs up from previous cycles
+    enable back         record status information to allow backing up
+    cs                  show current conflict set
+    wm {<i>n</i>}              show content of working memory element(s) <i>n</i>, or the entire WM
+                        if not <i>n</i> is given
+    restart             reset WM to beginning 
+    matches <i>rule</i>        for each condition element of the rule, shows WME's which match
+    show space | back   memory usage, cycles stored
+    report timing       writes two text files, TIMINGCPU.TXT and TIMINGCAU.TXT which
+                        report statistics related to the run of the program.
+    enable timing       begin recording data for timing report
+    
+</x></x></x></x></x></x></x></x></x></x></gpa></pre></body></html>
