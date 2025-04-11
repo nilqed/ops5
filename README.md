@@ -1,5 +1,19 @@
 # OPS5
 
+### Load using quicklisp:
+
+            * (ql:quickload :ops5)
+            To load "ops5":
+              Load 1 ASDF system:
+                ops5
+            ; Loading "ops5"
+            
+            (:OPS5)
+            *
+
+or clone this repo and copy/link to `~/quicklisp/local-projects`. 
+
+
 [OPS5 User's Manual](https://apps.dtic.mil/sti/pdfs/ADA106558.pdf) by [Charles L. Forgy](https://en.wikipedia.org/wiki/Charles_Forgy) (July 1981) 
 added to folder `doc` (source: ` apps.dtic.mil/sti/pdfs/` ).
 
