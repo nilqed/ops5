@@ -1,0 +1,281 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Introduction &mdash; OPS5 1981 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/documentation_options.js?v=103238f1"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to OPS5’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            OPS5
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">1. Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#the-production-system-architecture">1.1. The Production System Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ops5-s-working-memory">1.2. OPS5’s Working Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#ops5-s-production-memory">1.3. OPS5’s Production Memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-ops5-lexical-system">1.4. The OPS5 Lexical System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#acknowledgements">1,5. Acknowledgements</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OPS5</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">1. Introduction</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/introduction.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction">
+<h1>1. Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
+<p>0PS5 is a member of the class of programming languages known as production systems.
+It is used primarily for applications in the areas of artificial intelligence, expert systems, and cognitive psychology. This manual is a combination introductory and reference manual for OPS5.
+The rest of Section 1 provides an overview of the language. Sections 2 through 8 describe the
+language and its interpreter in detail. To allow the new user to read the manual straight through,
+the material has been organized in a top-down fashion. To allow the experienced user to answer detailed questions quickly, the manual has been divided into short
+sections describing individual features of the language, and an index has been provided.</p>
+<p>Three interpreters for OPS5 have been written, one in BLISS [1], one in MACLISP [9], and one in
+FRANZ LISP [3]. As could be expected, there are a few incompatibilities between the interpreters.
+The manual points out the differences between die three interpreters.</p>
+<section id="the-production-system-architecture">
+<h2>1.1. The Production System Architecture<a class="headerlink" href="#the-production-system-architecture" title="Link to this heading">¶</a></h2>
+<p>A production system is a program composed entirely of conditional statements called productions.
+These productions operate on expressions stored in a global data base called working memory. The productions are stored in a separate memory called production memory. The production is similar
+to the If-Then statement of conventional programming languages: a production that contains n conditions C1 through Cn and m actions A1 through Am means</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">When</span> <span class="n">working</span> <span class="n">memory</span> <span class="ow">is</span> <span class="n">such</span> <span class="n">that</span> <span class="n">C_1</span> <span class="n">through</span> <span class="n">C_n</span> <span class="n">are</span> <span class="n">true</span> <span class="n">simultaneously</span><span class="p">,</span>
+<span class="n">then</span> <span class="n">actions</span> <span class="n">A_1</span> <span class="n">through</span> <span class="n">A_m</span> <span class="n">should</span> <span class="n">be</span> <span class="n">executed</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>The condition part of a production is usually called its LHS (left hand side), and the action
+part is called its RHS  (right hand side).</p>
+<p>The production system interpreter executes a production system by performing a sequence of operations
+called the <strong>recognize-act cycle</strong>:</p>
+<p>1. [Match] Evaluate the LHSs of the productions to determine which are satisfied given the current
+contents of working memory.
+2. [Conflict resolution] Select one production with a satisfied LHS. If no productions have satisfied
+LHSs, halt the interpreter.
+3. [Act] Perform the actions specified in the RHS of the selected production.
+4. Go to step 1.</p>
+<p>Production systems differ from conventional programs in two major respects.
+The first is that the production system uses a different method for encoding the state of a computation. A conventional program
+encodes state by assigning values to local and global variables. A production system encodes state by putting
+expressions in the system’s global working memory. The other difference between production systems and
+conventional programs is the way flow of control is managed. A conventional program uses sequential
+execution of statements plus a number of control constructs including subroutine calls, loops, and conditional
+branching. A production system uses LHS satisfaction. Each production s LHS is a description of the states
+in which the production is applicable; the LHS becomes true when there is some information in working
+memory that the production can process. When the interpreter performs the match process, it is in effect
+searching for a production that knows how to process the data that is in working memory. When it finds that
+production and executes its RHS. working memory is changed, and so on the next cycle, the interpreter
+performs the match again to find a production that can handle the new data.</p>
+</section>
+<section id="ops5-s-working-memory">
+<h2>1.2. OPS5’s Working Memory<a class="headerlink" href="#ops5-s-working-memory" title="Link to this heading">¶</a></h2>
+<p>In OPS5, the most commonly used representation for information in working memory is the attribute-value
+representation. This representation is oriented towards describing objects and relations among objects; that
+is, even though it (like most representations) can be used for many other purposes, it is most naturally used to
+describe objects and.relations. In this representauon. every element in working memory consists of an object
+and a collection of associated attribute-value pairs. For example, in this representation, a single working
+memory element might indicate that block1 is a red block weighing 500 grams, measuring 100 mm on a side.
+The element would be</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">block</span>
+<span class="w">   </span><span class="nv">^name</span><span class="w">      </span><span class="nv">block1</span>
+<span class="w">   </span><span class="nv">^color</span><span class="w">     </span><span class="nv">red</span>
+<span class="w">   </span><span class="nv">^mass</span><span class="w">      </span><span class="mi">500</span>
+<span class="w">   </span><span class="nv">^length</span><span class="w">    </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^width</span><span class="w">     </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^thelght</span><span class="w">   </span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As this shows, an element consists of a class name (<cite>block</cite> in this case) followed by some number of attributes
+and values, with everything enclosed in parentheses. Attributes are distinguished by being preceded with the operator <cite>^</cite>.</p>
+</section>
+<section id="ops5-s-production-memory">
+<h2>1.3. OPS5’s Production Memory<a class="headerlink" href="#ops5-s-production-memory" title="Link to this heading">¶</a></h2>
+<p>The LHS of a production consists of one or more patterns; i.e.. one or more expressions that describe
+working memory elements. During the match part of the recognize-act cycle, the interpreter compares each
+pattern with die elements in working memory to determine if the pattern matches any of them. The pattern is
+considered satisfied if it matches at least one element. If all the patterns in a production’s LHS are satisfied,
+the LHS is satisfied.</p>
+<p>Patterns arc abstract rcprcseniations of working memory elements.
+One way a pattern can be an
+abstraction of a working memory element is to contain fewer attributes and values than the clement. Such a
+pattern will match any working memory element that contains the information in the pattern. (It does not
+matter how much more information the working memory clement contains.) Thus the pattern</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">block</span><span class="w"> </span><span class="nv">^color</span><span class="w"> </span><span class="nv">red</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>would match the working memory element</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">block</span>
+<span class="w">   </span><span class="nv">^name</span><span class="w">      </span><span class="nv">block1</span>
+<span class="w">   </span><span class="nv">^color</span><span class="w">     </span><span class="nv">red</span>
+<span class="w">   </span><span class="nv">^mass</span><span class="w">      </span><span class="mi">500</span>
+<span class="w">   </span><span class="nv">^length</span><span class="w">    </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^width</span><span class="w">     </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^thelght</span><span class="w">   </span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Another way a pattern can be an abstraction of a working memory element is to contain incompletely
+specified values. OPS5 provides special pattern operators that can be used to specify values at various levels
+of detail. The most important operator is the <strong>variable</strong>. A variable is any symbol that begins with the character
+<cite>&lt;</cite> and ends with the character <cite>&gt;</cite> – for example, <cite>&lt;x&gt;</cite> or <cite>&lt;status&gt;</cite>. A variable in a pattern may match
+anything, but if a variable occurs more than once in a production, it must match the same value everywhere.
+Thus if a cube is defined to be a block whose three sides are the same length, the following pattern will match only cubes.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="k">block</span><span class="w"> </span><span class="nv">^length</span><span class="w"> </span><span class="nv">&lt;x&gt;</span><span class="w"> </span><span class="nv">^width</span><span class="w"> </span><span class="nv">&lt;x&gt;</span><span class="w"> </span><span class="nv">^helght</span><span class="w"> </span><span class="nv">&lt;x&gt;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The RHS of a production consists of an unconditional sequence of actions. OPS5’s set of action types
+indudes actions to manipulate working memory, actions to perform input and output, actions to add new
+productions to production memory, and others. The most important of the actions are the ones to manipulate
+working memory. The action <strong>make</strong> is used to create and add new elements. A <strong>make</strong> action consists of an
+open parenthesis, the symbol <strong>make</strong>, a description of the element to create, and a close parenthesis. The
+description of the element is similar in form to the patterns in the LHS. For example, the following would
+create the element for block1 shown above.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">make</span><span class="w"> </span><span class="k">block</span>
+<span class="w">   </span><span class="nv">^name</span><span class="w">      </span><span class="nv">block1</span>
+<span class="w">   </span><span class="nv">^color</span><span class="w">     </span><span class="nv">red</span>
+<span class="w">   </span><span class="nv">^mass</span><span class="w">      </span><span class="mi">500</span>
+<span class="w">   </span><span class="nv">^length</span><span class="w">    </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^width</span><span class="w">     </span><span class="mi">100</span>
+<span class="w">   </span><span class="nv">^thelght</span><span class="w">   </span><span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The action <strong>remove</strong> is used to delete elements from working memory. A <strong>remove</strong> action consists of an open
+parenthesis, the symbol <strong>remove</strong>, a pointer to the element to delete, and a close parenthesis. The following
+for example would delete the element matching the third pattern of the production’s LHS.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nb">remove</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The action <strong>modify</strong> is used to change one or more values of an existing element. A <strong>modify</strong> action consists of
+an open parenthesis, the symbol <strong>modify</strong>, a pointer to the element to change, a description of the changes to
+make, and a close parenthesis. The following for example would change the status of the element
+matching the first pattern in the LHS to satisfied,</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">modify</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">^status</span><span class="w"> </span><span class="nv">satisfied</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A <strong>production</strong> consists of an open parenthesis, the symbol <strong>p</strong>, a name, the LHS of the production, the symbol <cite>–&gt;</cite>, the RHS, and a ciose parenthesis. The following is a typical (though quite small) OPS5 production. The text after the semicolon on each line is a comment.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">p</span><span class="w"> </span><span class="nv">find-colored-block</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">goal</span><span class="w">                              </span><span class="c1">; If there is a goal</span>
+<span class="w">        </span><span class="nv">^status</span><span class="w"> </span><span class="nv">active</span><span class="w">                 </span><span class="c1">; which is active</span>
+<span class="w">        </span><span class="nv">^type</span><span class="w"> </span><span class="nb">find</span><span class="w">                     </span><span class="c1">; to find</span>
+<span class="w">        </span><span class="nv">^object</span><span class="w"> </span><span class="k">block</span><span class="w">                  </span><span class="c1">; a block</span>
+<span class="w">        </span><span class="nv">^color</span><span class="w"> </span><span class="nv">&lt;z&gt;</span><span class="p">)</span><span class="w">                    </span><span class="c1">; of a certain color</span>
+<span class="w">    </span><span class="p">(</span><span class="k">block</span><span class="w">                             </span><span class="c1">; And there is a block</span>
+<span class="w">        </span><span class="nv">^color</span><span class="w"> </span><span class="nv">&lt;z&gt;</span><span class="w">                     </span><span class="c1">; of that color</span>
+<span class="w">        </span><span class="nv">^name</span><span class="w"> </span><span class="nv">&lt;block&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">--&gt;</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">make</span><span class="w"> </span><span class="nv">result</span><span class="w">                       </span><span class="c1">; Then make an element</span>
+<span class="w">        </span><span class="nv">^pointer</span><span class="w"> </span><span class="nv">&lt;block&gt;</span><span class="p">)</span><span class="w">              </span><span class="c1">; to point to the block</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">modify</span><span class="w"> </span><span class="mi">1</span><span class="w">                          </span><span class="c1">; And change the goal</span>
+<span class="w">        </span><span class="nv">^status</span><span class="w"> </span><span class="nv">satisfied</span><span class="p">))</span><span class="w">            </span><span class="c1">; marking it satisfied</span>
+</pre></div>
+</div>
+</section>
+<section id="the-ops5-lexical-system">
+<h2>1.4. The OPS5 Lexical System<a class="headerlink" href="#the-ops5-lexical-system" title="Link to this heading">¶</a></h2>
+<p>The input to OPS5 is completely free formal. Spaces, tabs, and new lines may be used at will to improve
+the readability of productions and working memory elements; the interpreter uses the parentheses to
+determine where units begin and end. In addition, comments like those shown above may be used anywhere;
+when the interpreter reads a line containing a semicolon, it discards everything from the semicolon to the end
+of the line. The above production could also have been written</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">p</span><span class="w"> </span><span class="nv">find-colored-block</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">goal</span><span class="w"> </span><span class="nv">^status</span><span class="w"> </span><span class="nv">active</span><span class="w"> </span><span class="nv">^type</span><span class="w"> </span><span class="nb">find</span><span class="w"> </span><span class="nv">^object</span><span class="w"> </span><span class="k">block</span>
+<span class="w">          </span><span class="nv">^color</span><span class="w"> </span><span class="nv">&lt;z&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="k">block</span><span class="w"> </span><span class="nv">^color</span><span class="w"> </span><span class="nv">&lt;z&gt;</span><span class="w"> </span><span class="nv">^name</span><span class="w"> </span><span class="nv">&lt;block&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="nv">--&gt;</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">make</span><span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="nv">^pointer</span><span class="w"> </span><span class="nv">&lt;block&gt;</span><span class="p">)</span>
+<span class="w">    </span><span class="p">(</span><span class="nv">modify</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="nv">^status</span><span class="w"> </span><span class="nv">satisfied</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="acknowledgements">
+<h2>1,5. Acknowledgements<a class="headerlink" href="#acknowledgements" title="Link to this heading">¶</a></h2>
+<p>The first language in the OPS family [4, 5] was designed in 1975 at Carnegie-Mellon University by Charles Forgy, John McDermott, Allen Newell, and Michael Rychener. The design of the language was influenced
+by earlier production systems languages, including PSG [10] and PSNLST [11]. Since 1975 OPS has been
+revised several limes as better representations and more efficient interpreters have been developed [ö, 7, 12].
+Many people have contributed to the development of OPS, including the members of the CMU production
+systems expert systems, and cognitive psychology groups, as well as the members of Digital Equipment
+Corporation’s expert systems group.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to OPS5’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Charles L. Forgy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
