@@ -10,7 +10,7 @@ The following is a simplified BNF description of the syntax of OPS5. Terminals a
 type face, and non-terminals are printed in italics. The only nonstandard meta symbol used is the star ("*").
 The star indicates that the preceding item is to be repeated zero or more times.
 
-      production              ( p constant-symbolic-atom Ihs --> rhs )
+      production              ( p constant-symbolic-atom lhs --> rhs )
       
       lhs                     positive-ce ce*
       
@@ -25,8 +25,8 @@ The star indicates that the preceding item is to be repeated zero or more times.
       
       form                    ( lhs-term* )
                           
-      lhs-term                ^ constant-symbolic-atom Ihs-value
-                              ^ number Ihs-value
+      lhs-term                ^ constant-symbolic-atom lhs-value
+                              ^ number lhs-value
                               lhs-value
                               
       lhs-value               { restriction* }
