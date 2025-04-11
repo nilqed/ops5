@@ -21,7 +21,7 @@ The star indicates that the preceding item is to be repeated zero or more times.
                               { element-variable form }
                               { form element-variable }
                               
-      negalive-ce             - form
+      negative-ce             - form
       
       form                    ( lhs-term* )
                           
@@ -54,7 +54,7 @@ The star indicates that the preceding item is to be repeated zero or more times.
       rhs                     action*
       
       action                  ( make rhs-term* )
-                              ( remove elemenhdesignator* )
+                              ( remove element-designator* )
                               ( modify element-designator rhs-term* ) 
                               ( halt )
                               ( bind variable )
@@ -72,24 +72,24 @@ The star indicates that the preceding item is to be repeated zero or more times.
                              element-variable
                            
       rhs-term               ^ var or-constant rhs-value
-                             rhs- value
+                             rhs-value
                              
       rhs-value              atomic-value
                              function
                              
       function               ( litval var-or-constant )
-                             ( substr element-designator varorconstant varor-constant )
+                             ( substr element-designator var-or-constant var-or-constant )
                              ( genatom )
                              ( crlf )
                              ( rjust var-or-constant )
                              ( tab to var-or-constant )
                              ( accept )
-                             ( accept var or constant )
+                             ( accept var-or-constant )
                              { acceptline var-or-constant* )
                              ( compute expression )
                              user-defined-function
       
-      userdefined-funclion   ( constant-symbolic-atom var-or-constant* )
+      user-defined-function  ( constant-symbolic-atom var-or-constant* )
       
       expression             number
                              variable
@@ -111,8 +111,8 @@ The star indicates that the preceding item is to be repeated zero or more times.
 Several terms have been left undefined: variable, element-variable, constant-symbolic-atom, any-atom, and
 number. Symbolic atoms and numbers are described in Section 2. The two kinds of variables are described in
 Sections 4 and 5. The only thing that needs to be explained here is the difference between any-atom and
-constani-symbolk-aiom. The fonner is an alum lhac is trcaicd as a constant because it is quoted (with // or
-« » usually). The latter is an atom that is treated as a constant because it docs not have the form of a
+constant-symbolic-atom. The former is an atom that is treated as a constant because it is quoted (with // or
+« » usually). The latter is an atom that is treated as a constant because it does not have the form of a
 variable or operator.
 
 
