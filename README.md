@@ -10,86 +10,101 @@ The following is a simplified BNF description of the syntax of OPS5. Terminals a
 type face, and non-terminals are printed in italics. The only nonstandard meta symbol used is the star ("*").
 The star indicates that the preceding item is to be repeated zero or more times.
 
-      production           ( p constant-symbolic-atom Ihs --> rhs )
-      Ihs                  positive-ce ce*
-      ce                   positive-ce
-                           negative-ce
-      positive-ce          form
-                           { element-variable form }
-                           { form element-variable }
-      negalive-ce          - form
+      production              ( p constant-symbolic-atom Ihs --> rhs )
       
-      form                 ( Ihs-term* )
+      lhs                     positive-ce ce*
+      
+      ce                      positive-ce
+                              negative-ce
+                              
+      positive-ce             form
+                              { element-variable form }
+                              { form element-variable }
+                              
+      negalive-ce             - form
+      
+      form                    ( lhs-term* )
                           
+      lhs-term                ^ constant-symbolic-atom Ihs-value
+                              ^ number Ihs-value
+                              lhs-value
+                              
+      lhs-value               { restriction* }
+                              restriction
+                              
+      restriction             << any-atom* >>
+                              predicate atomic-value
+                              atomic- value
+                            
+      atomic-value            // any-atom
+                              var-or-constant
+                            
+      var-or-constant         constant-symbolic-atom
+                              number
+                              variable  
+                            
+      predicate               =
+                              <>
+                              <
+                              <=
+                              >=
+                              >
+                              <=>
+                             
+      rhs                     action*
       
-      Ihs-term              t constant-symbolic-atom Ihs-value
-                            t number Ihs-value
-                            Ihs-value
-      Ihs-value             { restriction* }
-                            restriction
-      restriction           << any-atom* >>
-                            predicate atomic-value
-                            atomic- value
-      atomic-value          /1 any-atom
-                            var-or-constant
-      var-or-constant       constant-symbolic-atom
-                            number
-                            variable  
-      predicate             <>
-                            <
-                            < =
-                            > =
-                            >
-                            < = >
-      rhs                   action*
-      action                ( make rhs-term* )
-                            ( remove elemenhdesignator* )
-                            ( modify element-designator rhs-term* ) 
-                            ( halt )
-                            (  bind variable )
-                            (  bind variable rhs-term* )
-                            (  cbind element-variable )
-                            (  call constant-symbolic-atom rhs-term* )
-                            (  write rhs-lenn* )
-                            (  openfile rhs-lerm* )
-                            (  closefile rhs-term* )
-                            (  default rhs-lerm* )
-                            (  build quoled-form* )
+      action                  ( make rhs-term* )
+                              ( remove elemenhdesignator* )
+                              ( modify element-designator rhs-term* ) 
+                              ( halt )
+                              ( bind variable )
+                              ( bind variable rhs-term* )
+                              ( cbind element-variable )
+                              ( call constant-symbolic-atom rhs-term* )
+                              ( write rhs-lenn* )
+                              ( openfile rhs-lerm* )
+                              ( closefile rhs-term* )
+                              ( default rhs-lerm* )
+                              ( build quoled-form* )
 
 
-      element-designator   number
-                           element-variable
+      element-designator     number
+                             element-variable
                            
-      rhs-term             t var or-constant rhs-value
-                           rhs- value
-      rhs-value            atomic-value
-                           function
-      function             ( litval var-or-constant )
-                           ( substr element-designator varorconstant varor-constant )
-                           ( genatom )
-                           ( crlf )
-                           ( rjust varorconstant )
-                           ( tab to var-or-constant )
-                           ( accept )
-                           ( accept var or constant )
-                           { accept! ine var-orconstant* )
-                           ( compute expression )
-                           user-defined-function
+      rhs-term               ^ var or-constant rhs-value
+                             rhs- value
+                             
+      rhs-value              atomic-value
+                             function
+                             
+      function               ( litval var-or-constant )
+                             ( substr element-designator varorconstant varor-constant )
+                             ( genatom )
+                             ( crlf )
+                             ( rjust var-or-constant )
+                             ( tab to var-or-constant )
+                             ( accept )
+                             ( accept var or constant )
+                             { acceptline var-or-constant* )
+                             ( compute expression )
+                             user-defined-function
       
-      userdefined-funclion  ( constant-symbolic-atom var-orconstant* )
+      userdefined-funclion   ( constant-symbolic-atom var-or-constant* )
       
-      expression            number
-                            variable
-                            expression operator expression
-                            ( expression )
-      operator              +
-                            -
-                            *
-                            //
-                            \\
-      quoled-form           \\ rhs-value
-                            any-atom
-                            ( quoted-form* )
+      expression             number
+                             variable
+                             expression operator expression
+                             ( expression )
+                            
+      operator               +
+                             -
+                             *
+                             //
+                             \\
+                             
+      quoled-form            \\ rhs-value
+                             any-atom
+                             ( quoted-form* )
       
           
 
