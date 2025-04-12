@@ -30,3 +30,13 @@
 
 (reset-ops)
 (run)
+
+(ops-init)
+(literalize point px py pz)
+(p rule2 (point <x> <y> <z>) --> (write crlf <z> <y> "ok" crlf))
+(make point ^px 12 ^py 45 ^pz 0)
+
+
+
+
+

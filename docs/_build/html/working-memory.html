@@ -1,0 +1,292 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Working Memory &mdash; OPS5 1981 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/documentation_options.js?v=103238f1"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            OPS5
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">1. Introduction</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">OPS5</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">2. Working Memory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/working-memory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="working-memory">
+<h1>2. Working Memory<a class="headerlink" href="#working-memory" title="Link to this heading">¶</a></h1>
+<p>Working memory is a set of ordered pairs</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">Time</span> <span class="n">tag</span><span class="p">,</span> <span class="n">Working</span> <span class="n">memory</span> <span class="n">elemenO</span>
+</pre></div>
+</div>
+<p>A working memory element is a structure (usually a vector or record) of scalar
+values. The time tag is a unique numerical identifier that is supplied by the
+interpreter.</p>
+<section id="organization-of-working-memory">
+<h2>2.1. Organization of Working Memory<a class="headerlink" href="#organization-of-working-memory" title="Link to this heading">¶</a></h2>
+<p>OPS5, like most programming languages, provides both scalar (sometimes called atomic)
+data types and structured data types. The elements in working memory may not be scalars.
+(However, it is legal to have a structure that contains only a single scalar value.)</p>
+<p>The number of elements in working memory varies dynamically at run time. With
+the LISP-based interpreter, working memory may grow arbitrarily large. With the
+BLISS-based interpreter, a maximum size for the memory is established when the
+interpreter is installed; the current limit is 1023 elements.</p>
+</section>
+<section id="time-tags">
+<h2>2.2. Time Tags<a class="headerlink" href="#time-tags" title="Link to this heading">¶</a></h2>
+<p>Every element in working memory has an associated integer called the element’s
+time tag. This integer indicates when the element was created or last modified;
+the elements with larger time tags were more recently created or modified.
+No two elements have the same time tag. Time tags are used in conflict resolution,
+and they are used to designate elements by many of the facilities that communicate
+with the user (see Section 8.1).</p>
+</section>
+<section id="scalar-values">
+<h2>2.3. Scalar Values<a class="headerlink" href="#scalar-values" title="Link to this heading">¶</a></h2>
+<p>OPS5 provides two scalar data types: numbers and symbolic atoms.</p>
+<section id="numbers">
+<h3>2.3.1. Numbers<a class="headerlink" href="#numbers" title="Link to this heading">¶</a></h3>
+<p>The numeric type on the LISP-based interpreters for OPS5 includes both floating
+point and fixed point numbers.
+(The interpreters will make the appropriate conversions when mixed mode
+expressions are evaluated.) The BLISS-based interpreter allows only fixed point
+numbers to be used. Fixed point numbers consist of an optional sign, one or more
+decimal digits, and an optional decimal point. Valid fixed point
+numbers include <cite>0, 0., -7, -7.</cite>.</p>
+<p>A floating point number consists of an optional sign, zero or more decimal digits,
+a decimal point, zero or more digits after the decimal point, and an optional
+exponent, consisting of the letter “e” followed by a signed or unsigned integer.
+The number must include either an exponent or a digit after the decimal point;
+if it contains neither the interpreter will take it to be an integer. Typical
+floating point numbers include</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">0.0</span>
+<span class="mf">.05</span>
+<span class="mf">6.020</span><span class="o">-</span><span class="mi">23</span>
+<span class="o">-</span><span class="mf">1.812</span>
+</pre></div>
+</div>
+<p>The computer on which OPS5 is run determines the legal range for fixed and
+floating point numbers and the number of digits of precision in floating point
+numbers.</p>
+</section>
+<section id="symbolic-atoms">
+<h3>2.3.2. Symbolic Atoms<a class="headerlink" href="#symbolic-atoms" title="Link to this heading">¶</a></h3>
+<p>A symbolic atom is any sequence of characters that does not constitute a number
+and diat is treated as a single unit by the production system. Examples of
+symbolic atoms include</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">a</span>
+<span class="n">nil</span>
+<span class="o">---</span>
+<span class="mi">4</span><span class="o">-</span><span class="mi">7</span><span class="o">-</span><span class="mi">76</span>
+</pre></div>
+</div>
+<p>Some non-printing characters such as escape (ASCII 33 octal) or control-C
+(ASCII 3 octal) cannot conveniently be used in atom names. In addition, on the
+BLISS-based interpreters, symbolic atoms must not contain the character . But
+with this exception, all printing characters and many non-printing characters
+such as space and tab can be used.</p>
+<p>Some characters will be incorporated into atoms only if they are quoted. If they
+are used unquoted they are taken to be operators or separators. The characters
+that need to be quoted include (but are not limited to) space, tab, period,
+comma, uparrow (“t”), left and right braces (“{}”), and left and right
+parentheses (“()”). Different LISP interpreters provide different mechanisms
+for quoting characters. The best mechanism to use in OPS5 is probably the vertical
+bar (the character <a href="#id5"><span class="problematic" id="id6">|) because it is understood by all the OPS5 interpreters. In
+all the interpreters, everything that occurs between two vertical bars constitutes
+an atom. Thus the atom `) ) )` would be entered `|</span></a> ) ) ) <a href="#id1"><span class="problematic" id="id2">|</span></a><a href="#id3"><span class="problematic" id="id4">`</span></a>.</p>
+</section>
+<section id="case">
+<h3>2.3.3. Case<a class="headerlink" href="#case" title="Link to this heading">¶</a></h3>
+<p>The MACLISP-based interpreter and the BLISS-based interpreter do case folding;
+that is, they convert lower case characters to upper case on input. The
+FRANZ LISP-based interpreter does not do case folding. Thus on that interpreter,
+p and P are distinct atoms. All commands to the FRANZ LISP-based interpreter
+must be given in lower case.</p>
+</section>
+</section>
+<section id="the-standard-structured-types">
+<h2>2.4. The Standard Structured Types<a class="headerlink" href="#the-standard-structured-types" title="Link to this heading">¶</a></h2>
+<p>0PS5 provides two non-scalar data types, plus a mechanism which allows the user
+to implement other non-scalar types. The standard types are attribute-value
+elements and vectors.</p>
+<section id="attribute-value-elements">
+<h3>2.4.1. Attribute-Value Elements<a class="headerlink" href="#attribute-value-elements" title="Link to this heading">¶</a></h3>
+<p>An attribute-value element consists of a class name and some number of attribute-value
+pairs, with everything enclosed in parentheses. Attributes are symbolic atoms, and
+values are either scalars or sequences of scalars. An attribute-value element may
+not contain more than 126 values. The following is a typical element</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">goal</span><span class="w"> </span><span class="nv">^status</span><span class="w"> </span><span class="nv">active</span><span class="w"> </span><span class="nv">^type</span><span class="w"> </span><span class="nb">find</span><span class="w"> </span><span class="nv">^object</span><span class="w"> </span><span class="k">block</span><span class="w"> </span><span class="nv">^color</span><span class="w"> </span><span class="nv">red</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The class name of this element is <cite>goal</cite>. Its attributes are <cite>status</cite> , <cite>type</cite>,
+<cite>object</cite>, and <cite>color</cite> ; the corresponding attributes are <cite>active</cite> , <cite>find</cite>,
+<cite>object</cite> , and <cite>red</cite>. The prefix operator <cite>^</cite> is used to distinguish
+attributes from values.
+The order in which attribute-value pairs are specified is not significant. Thus
+this element could also have been written say</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">goal</span><span class="w"> </span><span class="nv">^color</span><span class="w"> </span><span class="nv">red</span><span class="w">  </span><span class="nv">^object</span><span class="w"> </span><span class="k">block</span><span class="w"> </span><span class="nv">^status</span><span class="w"> </span><span class="nv">active</span><span class="w"> </span><span class="nv">^type</span><span class="w"> </span><span class="nb">find</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="declarations">
+<h3>2.4.1.1. Declarations<a class="headerlink" href="#declarations" title="Link to this heading">¶</a></h3>
+<p>Attribute names <strong>must</strong> be declared before they can be used. The usual way to
+declare names is with
+<strong>1iteralize</strong>. (Another method is described in Section 2.6.) A <cite>1iteralize</cite>
+declaration indicates which attributes will be used in elements of a given class.
+A declaration consists of the atom <cite>1iteralize</cite> , a class
+name, and the attributes for that class, all enclosed in parentheses. For the
+goal shown above, a declaration like the following would be given.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">literalize</span><span class="w"> </span><span class="nv">goal</span>
+<span class="w">        </span><span class="nv">status</span>
+<span class="w">        </span><span class="k">type</span>
+<span class="w">        </span><span class="nv">object</span>
+<span class="w">        </span><span class="nv">color</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This indicates that elements of class goal can have the attributes <cite>status</cite>,
+<cite>type</cite>, <cite>object</cite>, and <cite>color</cite>.</p>
+<p>An attribute may have only one scalar value at a time unless it has appeared in
+a <strong>vector-attribute</strong> declaration. A vector attribute may have one, two, three,
+or more values; the only restriction is that the total size of the working memory
+element may not exceed 126 values. The number of values assigned to a vector
+attribute may vary dynamically at run time. The declaration consists of the atom
+<cite>vector-attribute</cite> and one or more attribute names, all enclosed in parentheses.
+For example, if <cite>contents</cite> was to be made a vector attribute, it would be
+declared</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">vector-attribute</span><span class="w"> </span><span class="nv">contents</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For an example of a vector attribute, consider a production system to solve the
+Towers of Hanoi problem. The vector attribute <cite>contents</cite> could be used to
+indicate which disks were on a given <cite>peg</cite>.</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">peg</span>
+<span class="w">   </span><span class="nv">^name</span><span class="w"> </span><span class="nv">peg2</span>
+<span class="w">   </span><span class="nv">^contents</span><span class="w"> </span><span class="nv">disk1</span><span class="w"> </span><span class="nv">disk3</span><span class="w"> </span><span class="nv">d1sk4</span><span class="w"> </span><span class="nv">disk5</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Two restrictions apply to vector attributes.</p>
+<ul class="simple">
+<li><p>An element class may not have more than one vector attribute.</p></li>
+<li><p>The vector attribute declaration is global. Each attribute is either a
+scalar attribute everywhere it is used or a vector attribute everywhere it
+is used. It is not possible for an attribute to be a scalar attribute in one
+element class and a vector attribute in another.</p></li>
+</ul>
+<section id="error-checking">
+<h4>2.4.1.2. Error Checking<a class="headerlink" href="#error-checking" title="Link to this heading">¶</a></h4>
+<p>OPS5 does not perform extensive error checking of attribute-value elements. It
+will permit attributes to be used with element classes they were not declared
+for, and it will allow the user to treat scalar attributes as vector attributes.
+It cannot check for errors like these because attribute-value elements are
+implemented using a general mechanism that is also available to the user
+(see Section 2.6).</p>
+</section>
+</section>
+<section id="vector-elements">
+<h3>2.4.2. Vector Elements<a class="headerlink" href="#vector-elements" title="Link to this heading">¶</a></h3>
+<p>The vector representation is used for data that needs to be represented as a
+sequence of symbols. An element in this representation consists of an open
+parenthesis, a sequence of atoms and numbers, and a close parenthesis. One
+common use for this representation is to hold input from the user. The element shown
+below for example might be a command given to a system for algebraic manipulation,</p>
+<div class="highlight-lisp notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="nv">differentiate</span><span class="w"> </span><span class="nv">expression</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="nv">wrt</span><span class="w"> </span><span class="nv">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Vector working memory elements do not have to be declared. Vectors can vary in
+length at run time. A vector cannot contain more than 127 values.</p>
+</section>
+</section>
+<section id="details-of-implementation">
+<h2>2.5. Details of Implementation<a class="headerlink" href="#details-of-implementation" title="Link to this heading">¶</a></h2>
+<p>In the OPS5 interpreter, all working memory elements are stored as ordered lists
+or vectors of values. Attribute-value representations are implemented by mapping
+field names into indices. The lists shrink and grow as necessary when the
+elements are modified. An element may not grow to more than 127 values,
+however.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Charles L. Forgy.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
